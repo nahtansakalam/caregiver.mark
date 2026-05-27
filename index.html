@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Video Upload Website</title>
+  <title>Video Upload & Save Website</title>
 
   <style>
 
@@ -12,7 +12,7 @@
       margin:0;
       padding:0;
       box-sizing:border-box;
-      font-family:Arial, sans-serif;
+      font-family:Arial,sans-serif;
     }
 
     body{
@@ -21,9 +21,9 @@
     }
 
     header{
+      background:#111;
       padding:25px;
       text-align:center;
-      background:#111;
       border-bottom:1px solid #222;
     }
 
@@ -42,33 +42,27 @@
       background:#161616;
       padding:40px;
       border-radius:20px;
-      text-align:center;
       border:1px solid #222;
+      text-align:center;
       margin-bottom:40px;
     }
 
     .upload-box input{
       margin-top:20px;
       padding:10px;
-      color:white;
     }
 
     .video-gallery{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-      gap:25px;
+      gap:20px;
     }
 
     .video-card{
       background:#161616;
-      padding:15px;
-      border-radius:20px;
       border:1px solid #222;
-      transition:0.3s;
-    }
-
-    .video-card:hover{
-      transform:translateY(-5px);
+      border-radius:20px;
+      padding:15px;
     }
 
     .video-card video{
@@ -76,11 +70,22 @@
       border-radius:15px;
     }
 
+    .delete-btn{
+      width:100%;
+      margin-top:10px;
+      padding:12px;
+      border:none;
+      background:red;
+      color:white;
+      border-radius:10px;
+      cursor:pointer;
+    }
+
     footer{
       text-align:center;
       padding:30px;
+      color:#777;
       border-top:1px solid #222;
-      color:#888;
       margin-top:50px;
     }
 
@@ -89,18 +94,16 @@
 
 <body>
 
-  <!-- HEADER -->
   <header>
-    <h1>My Video Website</h1>
+    <h1>Saved Video Website</h1>
   </header>
 
-  <!-- MAIN -->
   <div class="container">
 
-    <!-- UPLOAD SECTION -->
+    <!-- UPLOAD BOX -->
     <div class="upload-box">
 
-      <h2>Upload Your Videos</h2>
+      <h2>Upload Videos</h2>
 
       <input 
         type="file" 
@@ -116,46 +119,92 @@
 
   </div>
 
-  <!-- FOOTER -->
   <footer>
     © 2026 Video Upload Website
   </footer>
 
   <script>
 
-    // SELECT ELEMENTS
-    const videoUpload = document.getElementById("videoUpload");
-    const videoGallery = document.getElementById("videoGallery");
+    const uploadInput = document.getElementById("videoUpload");
+    const gallery = document.getElementById("videoGallery");
 
-    // UPLOAD EVENT
-    videoUpload.addEventListener("change", function(event){
+    // LOAD SAVED VIDEOS
+    window.onload = function(){
+
+      const savedVideos = JSON.parse(localStorage.getItem("videos")) || [];
+
+      savedVideos.forEach(videoData => {
+        createVideo(videoData);
+      });
+
+    };
+
+    // UPLOAD VIDEOS
+    uploadInput.addEventListener("change", function(event){
 
       const files = event.target.files;
 
-      // LOOP THROUGH FILES
-      for(let i = 0; i < files.length; i++){
+      for(let file of files){
 
-        const file = files[i];
+        const reader = new FileReader();
 
-        // CREATE VIDEO CARD
-        const card = document.createElement("div");
-        card.classList.add("video-card");
+        reader.onload = function(e){
 
-        // CREATE VIDEO
-        const video = document.createElement("video");
+          const videoData = e.target.result;
 
-        // VIDEO SETTINGS
-        video.src = URL.createObjectURL(file);
-        video.controls = true;
+          // SAVE TO LOCAL STORAGE
+          let savedVideos = JSON.parse(localStorage.getItem("videos")) || [];
 
-        // APPEND VIDEO
-        card.appendChild(video);
+          savedVideos.push(videoData);
 
-        // ADD TO GALLERY
-        videoGallery.appendChild(card);
+          localStorage.setItem("videos", JSON.stringify(savedVideos));
+
+          // SHOW VIDEO
+          createVideo(videoData);
+
+        };
+
+        reader.readAsDataURL(file);
+
       }
 
     });
+
+    // CREATE VIDEO ELEMENT
+    function createVideo(videoSrc){
+
+      const card = document.createElement("div");
+      card.classList.add("video-card");
+
+      const video = document.createElement("video");
+
+      video.src = videoSrc;
+      video.controls = true;
+
+      // DELETE BUTTON
+      const deleteBtn = document.createElement("button");
+
+      deleteBtn.innerText = "Delete Video";
+      deleteBtn.classList.add("delete-btn");
+
+      deleteBtn.onclick = function(){
+
+        card.remove();
+
+        let savedVideos = JSON.parse(localStorage.getItem("videos")) || [];
+
+        savedVideos = savedVideos.filter(v => v !== videoSrc);
+
+        localStorage.setItem("videos", JSON.stringify(savedVideos));
+
+      };
+
+      card.appendChild(video);
+      card.appendChild(deleteBtn);
+
+      gallery.appendChild(card);
+
+    }
 
   </script>
 
