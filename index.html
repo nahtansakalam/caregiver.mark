@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Video Upload Website</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:#0d0d0d;
+      color:white;
+    }
+
+    header{
+      padding:25px;
+      text-align:center;
+      background:#111;
+      border-bottom:1px solid #222;
+    }
+
+    header h1{
+      font-size:40px;
+    }
+
+    .container{
+      width:90%;
+      max-width:1200px;
+      margin:auto;
+      padding:40px 0;
+    }
+
+    .upload-box{
+      background:#161616;
+      padding:40px;
+      border-radius:20px;
+      text-align:center;
+      border:1px solid #222;
+      margin-bottom:40px;
+    }
+
+    .upload-box input{
+      margin-top:20px;
+      padding:10px;
+      color:white;
+    }
+
+    .video-gallery{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      gap:25px;
+    }
+
+    .video-card{
+      background:#161616;
+      padding:15px;
+      border-radius:20px;
+      border:1px solid #222;
+      transition:0.3s;
+    }
+
+    .video-card:hover{
+      transform:translateY(-5px);
+    }
+
+    .video-card video{
+      width:100%;
+      border-radius:15px;
+    }
+
+    footer{
+      text-align:center;
+      padding:30px;
+      border-top:1px solid #222;
+      color:#888;
+      margin-top:50px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <h1>My Video Website</h1>
+  </header>
+
+  <!-- MAIN -->
+  <div class="container">
+
+    <!-- UPLOAD SECTION -->
+    <div class="upload-box">
+
+      <h2>Upload Your Videos</h2>
+
+      <input 
+        type="file" 
+        id="videoUpload" 
+        accept="video/*" 
+        multiple
+      >
+
+    </div>
+
+    <!-- VIDEO GALLERY -->
+    <div class="video-gallery" id="videoGallery"></div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2026 Video Upload Website
+  </footer>
+
+  <script>
+
+    // SELECT ELEMENTS
+    const videoUpload = document.getElementById("videoUpload");
+    const videoGallery = document.getElementById("videoGallery");
+
+    // UPLOAD EVENT
+    videoUpload.addEventListener("change", function(event){
+
+      const files = event.target.files;
+
+      // LOOP THROUGH FILES
+      for(let i = 0; i < files.length; i++){
+
+        const file = files[i];
+
+        // CREATE VIDEO CARD
+        const card = document.createElement("div");
+        card.classList.add("video-card");
+
+        // CREATE VIDEO
+        const video = document.createElement("video");
+
+        // VIDEO SETTINGS
+        video.src = URL.createObjectURL(file);
+        video.controls = true;
+
+        // APPEND VIDEO
+        card.appendChild(video);
+
+        // ADD TO GALLERY
+        videoGallery.appendChild(card);
+      }
+
+    });
+
+  </script>
+
+</body>
+</html>
